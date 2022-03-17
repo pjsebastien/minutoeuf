@@ -14,49 +14,28 @@ import React, { useState } from 'react';
 import Colors from '../constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
 
+import { useDispatch, useSelector } from 'react-redux';
+import * as appActions from '../store/actions/App';
+import { useEffect } from 'react';
+
 const Recipes = props => {
-    const categories = [
-        {
-            id: 0,
-            title: 'Petit-Déjeuner',
-            image: require('../assets/temp/alacoque.jpg'),
-        },
-        {
-            id: 1,
-            title: 'Entrée',
-            image: require('../assets/temp/dur.jpg'),
-        },
-        {
-            id: 2,
-            title: 'Plat chaud',
-            image: require('../assets/temp/mollé.jpg'),
-        },
-        {
-            id: 3,
-            title: 'Dessert',
-            image: require('../assets/temp/mollé.jpg'),
-        },
-    ];
-    const recipes = [
-        {
-            id: 0,
-            title: 'Oeufs mimosas au saumon et a la feta du sud ouest',
-            image: require('../assets/temp/alacoque.jpg'),
-        },
-        {
-            id: 1,
-            title: 'Omelette au jambon et aux champignons',
-            image: require('../assets/temp/dur.jpg'),
-        },
-        {
-            id: 2,
-            title: 'Third Item',
-            image: require('../assets/temp/mollé.jpg'),
-        },
-    ];
     const [activeCategory, setActiveCategory] = useState('Petit-Déjeuner');
+    const [fetchedRecipes, setFetchedRecipes] = useState([]);
+    const recipes = useSelector(state => state.recipes);
+    const categories = useSelector(state => state.categories);
+
+    const dispatch = useDispatch();
+    useEffect(() => {
+        dispatch(appActions.getRecipes('id'));
+        dispatch(appActions.getCategories());
+        setFetchedRecipes(recipes);
+    }, []);
 
     const onPressCategoryHandle = category => {
+        const selectedCategoryRecipes = recipes.filter(
+            recipe => recipe.category == category,
+        );
+        setFetchedRecipes(selectedCategoryRecipes);
         return setActiveCategory(category);
     };
 
@@ -80,15 +59,15 @@ const Recipes = props => {
                             renderItem={({ item }) => (
                                 <TouchableOpacity
                                     activeOpacity={0.6}
-                                    onPress={() => onPressCategoryHandle(item.title)}
+                                    onPress={() => onPressCategoryHandle(item.name)}
                                 >
                                     <Text
                                         style={{
                                             ...styles.ButtonTopText,
-                                            color: getColorCategory(item.title),
+                                            color: getColorCategory(item.name),
                                         }}
                                     >
-                                        {item.title}
+                                        {item.name}
                                     </Text>
                                 </TouchableOpacity>
                             )}
@@ -100,7 +79,9 @@ const Recipes = props => {
                                 nestedScrollEnabled
                                 showsHorizontalScrollIndicator={false}
                                 horizontal
-                                data={recipes}
+                                data={
+                                    fetchedRecipes.length > 0 ? fetchedRecipes : recipes
+                                }
                                 renderItem={({ item }) => (
                                     <TouchableOpacity
                                         key={item.id}
@@ -109,7 +90,7 @@ const Recipes = props => {
                                             ...styles.card,
                                             backgroundColor:
                                                 item.id % 2
-                                                    ? Colors.secondaryYellow
+                                                    ? Colors.secondaryYellowLight
                                                     : Colors.backGroundColorSecondary,
                                         }}
                                         onPress={() =>
@@ -119,7 +100,9 @@ const Recipes = props => {
                                         }
                                     >
                                         <Image
-                                            source={item.image}
+                                            source={{
+                                                uri: item.image,
+                                            }}
                                             style={styles.imageCard}
                                         />
                                         <View
@@ -144,7 +127,7 @@ const Recipes = props => {
                                                 }}
                                                 numberOfLines={3}
                                             >
-                                                {item.title}
+                                                {item.name}
                                             </Text>
                                             <Text
                                                 style={{
@@ -155,7 +138,7 @@ const Recipes = props => {
                                                             : Colors.textPrimary,
                                                 }}
                                             >
-                                                Facile
+                                                {item.difficulty}
                                             </Text>
                                             <View
                                                 style={{
@@ -181,7 +164,7 @@ const Recipes = props => {
                                                                 : Colors.textPrimary,
                                                     }}
                                                 >
-                                                    3-5 min
+                                                    {item.time} min
                                                 </Text>
                                             </View>
                                         </View>

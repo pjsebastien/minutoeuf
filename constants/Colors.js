@@ -4,6 +4,7 @@ export default {
     textPrimary: '#5d5859',
     textPrimaryLight: '#fff3ed',
     secondaryYellow: '#ecb806',
+    secondaryYellowLight: '#f1cd50',
     secondaryGray: '#c1bec0',
     secondaryGrayLight: '#f3f2f3',
 };

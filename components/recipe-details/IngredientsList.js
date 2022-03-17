@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import Colors from '../../constants/Colors';
 
 const IngredientsList = ({ ingredients }) => {
+    console.log(ingredients);
     const [count, setCount] = useState(2);
     return (
         <View>
@@ -34,23 +35,27 @@ const IngredientsList = ({ ingredients }) => {
                     </TouchableOpacity>
                 </View>
             </View>
-            {ingredients.map(ingredient => {
+            {ingredients.map((ingredient, index) => {
                 return (
-                    <View key={ingredient.id}>
+                    <View key={index}>
                         <View style={styles.cardIngredientsContainer}>
                             <View style={styles.containerItems}>
-                                <Image
+                                {/* <Image
                                     style={styles.cardImage}
                                     source={ingredient.image}
-                                />
+                                /> */}
                                 <Text style={styles.cardIngredientName}>
-                                    {ingredient.name}
+                                    {ingredient.attributes.title}
                                 </Text>
                             </View>
                             <View style={styles.containerItems}>
                                 <Text style={styles.cardIngredientQuantity}>
-                                    {ingredient.quantity * count}{' '}
-                                    {ingredient.mesure ? ingredient.mesure : null}
+                                    {ingredient.attributes.quantity > 0
+                                        ? ingredient.attributes.quantity * count
+                                        : null}{' '}
+                                    {ingredient.attributes.mesure
+                                        ? ingredient.attributes.mesure
+                                        : null}
                                 </Text>
                             </View>
                         </View>

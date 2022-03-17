@@ -7,57 +7,38 @@ import {
     Text,
     View,
 } from 'react-native';
-import React from 'react';
+import React, { useState } from 'react';
 import Colors from '../constants/Colors';
 import TopIcons from '../components/recipe-details/TopIcons';
 import IngredientsList from '../components/recipe-details/IngredientsList';
+import { useEffect } from 'react';
 
-const RecipeDetails = () => {
-    const recipe = {
-        title: 'Oeufs mimosas au saumon et a la feta du sud ouest',
-        category: 'Petit déjeuner',
-        image: require('../assets/temp/alacoque.jpg'),
-        difficulty: 'Facile',
-        time: '20 min',
-        ingredients: [
-            {
-                id: 0,
-                name: 'Saumon',
-                quantity: 300,
-                mesure: 'gr',
-                image: require('../assets/temp/dur.jpg'),
-            },
-            {
-                id: 1,
-                name: 'Oeuf',
-                quantity: 1,
-                mesure: '',
-                image: require('../assets/temp/mollé.jpg'),
-            },
-            {
-                id: 2,
-                name: 'Feta',
-                quantity: 100,
-                mesure: 'gr',
-                image: require('../assets/temp/poché.jpg'),
-            },
-        ],
-    };
-
+const RecipeDetails = ({ route }) => {
+    const [recipe, setRecipee] = useState({});
+    const [ingredients, setIngredients] = useState([]);
+    useEffect(() => {
+        let { selectedRecipe } = route?.params;
+        setRecipee(selectedRecipe);
+        setIngredients(selectedRecipe.ingredients);
+    }, []);
+    console.log(recipe.ingredients);
     return (
         <View style={styles.container}>
             <ScrollView showsVerticalScrollIndicator={false}>
                 <SafeAreaView style={{ flex: 1 }}>
                     <ImageBackground
                         style={styles.mainImage}
-                        source={recipe.image}
+                        source={{
+                            uri: recipe.image,
+                        }}
                     ></ImageBackground>
                     <View style={styles.recipeContainer}>
                         <TopIcons recipe={recipe} />
                         <View style={{ marginHorizontal: 20 }}>
-                            <Text style={styles.title}>{recipe.title}</Text>
+                            <Text style={styles.title}>{recipe.name}</Text>
                             <Text style={styles.categoryText}>{recipe.category}</Text>
-                            <IngredientsList ingredients={recipe.ingredients} />
+                            <IngredientsList ingredients={ingredients} />
+                            <Text>{recipe.content}</Text>
                         </View>
                     </View>
                 </SafeAreaView>

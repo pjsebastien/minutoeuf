@@ -12,29 +12,22 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
-import React from 'react';
+import React, { useEffect } from 'react';
 import Colors from '../constants/Colors';
 import { Feather } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
 
+import { useDispatch, useSelector } from 'react-redux';
+import * as appActions from '../store/actions/App';
+
 const Home = props => {
-    const DATA = [
-        {
-            id: 0,
-            title: 'First Item',
-            image: require('../assets/temp/alacoque.jpg'),
-        },
-        {
-            id: 1,
-            title: 'Second Item',
-            image: require('../assets/temp/dur.jpg'),
-        },
-        {
-            id: 2,
-            title: 'Third Item',
-            image: require('../assets/temp/mollé.jpg'),
-        },
-    ];
+    const typeOffEggs = useSelector(state => state.typeOffEggs);
+
+    const dispatch = useDispatch();
+    useEffect(() => {
+        dispatch(appActions.getTypeOffEggs());
+    }, []);
+
     return (
         <View style={styles.container}>
             <ScrollView showsVerticalScrollIndicator={false}>
@@ -65,7 +58,7 @@ const Home = props => {
                                 nestedScrollEnabled
                                 showsHorizontalScrollIndicator={false}
                                 horizontal
-                                data={DATA}
+                                data={typeOffEggs}
                                 renderItem={({ item }) => (
                                     <TouchableOpacity
                                         key={item.id}
@@ -74,20 +67,22 @@ const Home = props => {
                                             ...styles.card,
                                             backgroundColor:
                                                 item.id % 2
-                                                    ? Colors.secondaryYellow
+                                                    ? Colors.secondaryYellowLight
                                                     : Colors.backGroundColorSecondary,
                                         }}
                                         onPress={() =>
                                             props.navigation.navigate(
                                                 'TimerInstruction',
                                                 {
-                                                    selectedRecipe: item,
+                                                    selectedTypeOffEgg: item,
                                                 },
                                             )
                                         }
                                     >
                                         <Image
-                                            source={item.image}
+                                            source={{
+                                                uri: item.image,
+                                            }}
                                             style={styles.imageCard}
                                         />
                                         <View
@@ -109,7 +104,7 @@ const Home = props => {
                                                             : Colors.textPrimary,
                                                 }}
                                             >
-                                                {item.title}
+                                                {item.name}
                                             </Text>
                                             <View
                                                 style={{

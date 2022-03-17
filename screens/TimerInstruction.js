@@ -16,31 +16,8 @@ import { Timer } from 'react-native-stopwatch-timer';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { Audio } from 'expo-av';
 
-const cookInstruction = {
-    typeOfEgg: 'oeuf dur',
-    sizes: [
-        {
-            id: 0,
-            size: 'small',
-            sizeIcon: 40,
-            time: 4800,
-        },
-        {
-            id: 1,
-            size: 'small',
-            sizeIcon: 50,
-            time: 5400,
-        },
-        {
-            id: 2,
-            size: 'small',
-            sizeIcon: 60,
-            time: 6000,
-        },
-    ],
-};
-
 const TimerInstruction = props => {
+    let { selectedTypeOffEgg } = props.route.params;
     const [cookTimer, setCookTimer] = useState(0);
     const [isTimerStart, setIsTimerStart] = useState(false);
     const [resetTimer, setResetTimer] = useState(true);
@@ -88,7 +65,7 @@ const TimerInstruction = props => {
                                 Choisissez la taille de l'oeuf
                             </Text>
                             <View style={styles.eggButtonsContainer}>
-                                {cookInstruction.sizes.map(size => {
+                                {selectedTypeOffEgg.sizes.data.map(size => {
                                     return (
                                         <TouchableOpacity
                                             key={size.id}
@@ -97,12 +74,12 @@ const TimerInstruction = props => {
                                             onPress={() =>
                                                 isTimerStart
                                                     ? null
-                                                    : setCookTimer(size.time)
+                                                    : setCookTimer(size.attributes.time)
                                             }
                                         >
                                             <Ionicons
                                                 name="egg"
-                                                size={size.sizeIcon}
+                                                size={size.attributes.sizeIcon}
                                                 color={Colors.secondaryYellow}
                                             />
                                         </TouchableOpacity>
@@ -114,17 +91,7 @@ const TimerInstruction = props => {
                             <Text style={{ ...styles.topText }}>Suivez ces étapes :</Text>
                             <View style={styles.instructionTextContainer}>
                                 <Text style={styles.instructionText}>
-                                    1. Faire bouillire de l'eau.
-                                </Text>
-                                <Text style={styles.instructionText}>
-                                    2. Ajouter une cuillère a soupe de vinaigre.
-                                </Text>
-                                <Text style={styles.instructionText}>
-                                    3. Baisser le feu et créer un tourbillon a l'aide d'un
-                                    spatule.
-                                </Text>
-                                <Text style={styles.instructionText}>
-                                    3. Plonger l'oeuf et démarrer le timer !
+                                    {selectedTypeOffEgg.instruction}
                                 </Text>
                             </View>
                         </View>
