@@ -8,6 +8,7 @@ import {
     TouchableHighlight,
     TouchableOpacity,
     View,
+    Platform,
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import Colors from '../constants/Colors';
@@ -15,6 +16,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { Timer } from 'react-native-stopwatch-timer';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { Audio } from 'expo-av';
+
+import GoBackButton from '../components/GoBackButton';
 
 const TimerInstruction = props => {
     let { selectedTypeOffEgg } = props.route.params;
@@ -33,12 +36,10 @@ const TimerInstruction = props => {
             interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_DO_NOT_MIX,
             playsInSilentModeIOS: true,
         });
-        console.log('Loading Sound');
         const { sound } = await Audio.Sound.createAsync(
             require('../assets/temp/sf_coq_01.mp3'),
             { isLooping: true, staysActiveInBackground: true },
         );
-
         setSound(sound);
         await sound.playAsync();
     }
@@ -50,20 +51,20 @@ const TimerInstruction = props => {
               }
             : undefined;
     }, [sound]);
+
     return (
         <View style={styles.container}>
             <ScrollView showsVerticalScrollIndicator={false}>
                 <SafeAreaView style={{ flex: 1 }}>
                     <View style={styles.mainContainer}>
                         <View>
-                            <Text
-                                style={{
-                                    ...styles.topText,
+                            <GoBackButton
+                                title={"Taille de l'Oeuf"}
+                                customContainerStyle={{
                                     marginTop: Platform.OS === 'android' ? 50 : 30,
+                                    marginBottom: 20,
                                 }}
-                            >
-                                Choisissez la taille de l'oeuf
-                            </Text>
+                            />
                             <View style={styles.eggButtonsContainer}>
                                 {selectedTypeOffEgg.sizes.data.map(size => {
                                     return (
@@ -88,7 +89,6 @@ const TimerInstruction = props => {
                             </View>
                         </View>
                         <View>
-                            <Text style={{ ...styles.topText }}>Suivez ces étapes :</Text>
                             <View style={styles.instructionTextContainer}>
                                 <Text style={styles.instructionText}>
                                     {selectedTypeOffEgg.instruction}
@@ -186,12 +186,6 @@ const styles = StyleSheet.create({
         height: Dimensions.get('window').height,
         justifyContent: 'space-between',
     },
-    topText: {
-        fontFamily: 'Source-serif-bold',
-        fontSize: 24,
-        marginBottom: 16,
-        color: Colors.textPrimary,
-    },
     eggButtonsContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -223,6 +217,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 15,
         paddingVertical: 10,
         borderRadius: 25,
+        marginBottom: 15,
     },
 });
 

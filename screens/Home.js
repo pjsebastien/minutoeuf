@@ -1,8 +1,4 @@
 import {
-    Dimensions,
-    FlatList,
-    Image,
-    ImageBackground,
     Platform,
     SafeAreaView,
     ScrollView,
@@ -12,21 +8,47 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Colors from '../constants/Colors';
 import { Feather } from '@expo/vector-icons';
-import { Ionicons } from '@expo/vector-icons';
 
 import { useDispatch, useSelector } from 'react-redux';
 import * as appActions from '../store/actions/App';
 
+import TypeOfEggCard from '../components/home-page/TypeOfEggCard';
+import LastRecipeCard from '../components/home-page/LastRecipeCard';
+
 const Home = props => {
+    const [activeCategory, setActiveCategory] = useState(`Minut'Oeuf`);
+    const [query, setQuery] = useState('');
+
     const typeOffEggs = useSelector(state => state.typeOffEggs);
+    const recipes = useSelector(state => state.recipes);
 
     const dispatch = useDispatch();
+
     useEffect(() => {
         dispatch(appActions.getTypeOffEggs());
+        dispatch(appActions.getRecipes('createdAt'));
+        // console.log(recipes.slice(0, 3));
     }, []);
+
+    const handleOnSubmit = () => {
+        props.navigation.navigate('SearchedRecipe', {
+            query: query,
+        });
+    };
+
+    const onPressCategoryHandle = category => {
+        return setActiveCategory(category);
+    };
+
+    const getColorCategory = category => {
+        if (activeCategory == category) {
+            return Colors.textPrimary;
+        }
+        return Colors.secondaryGray;
+    };
 
     return (
         <View style={styles.container}>
@@ -42,101 +64,48 @@ const Home = props => {
                             size={24}
                             color={Colors.secondaryYellow}
                         />
-                        <TextInput placeholder="Rechercher une recette..." />
+                        <TextInput
+                            value={query}
+                            onChangeText={text => setQuery(text)}
+                            placeholder="Rechercher une recette..."
+                            onSubmitEditing={() => handleOnSubmit()}
+                        />
                     </View>
                     <View style={styles.buttonTopContainer}>
-                        <TouchableOpacity activeOpacity={0.6}>
-                            <Text style={styles.ButtonTopText}>Minut'Oeuf</Text>
+                        <TouchableOpacity
+                            activeOpacity={0.6}
+                            onPress={() => onPressCategoryHandle("Minut'Oeuf")}
+                        >
+                            <Text
+                                style={{
+                                    ...styles.ButtonTopText,
+                                    color: getColorCategory("Minut'Oeuf"),
+                                }}
+                            >
+                                Minut'Oeuf
+                            </Text>
                         </TouchableOpacity>
-                        <TouchableOpacity activeOpacity={0.6}>
-                            <Text style={styles.ButtonTopText}>Dernières recettes</Text>
+                        <TouchableOpacity
+                            activeOpacity={0.6}
+                            onPress={() => onPressCategoryHandle('Dernières recettes')}
+                        >
+                            <Text
+                                style={{
+                                    ...styles.ButtonTopText,
+                                    color: getColorCategory('Dernières recettes'),
+                                }}
+                            >
+                                Dernières recettes
+                            </Text>
                         </TouchableOpacity>
                     </View>
-                    <View style={{ marginTop: 10 }}>
+                    <View style={{ marginVertical: 10 }}>
                         <View style={styles.cards}>
-                            <FlatList
-                                nestedScrollEnabled
-                                showsHorizontalScrollIndicator={false}
-                                horizontal
-                                data={typeOffEggs}
-                                renderItem={({ item }) => (
-                                    <TouchableOpacity
-                                        key={item.id}
-                                        activeOpacity={0.8}
-                                        style={{
-                                            ...styles.card,
-                                            backgroundColor:
-                                                item.id % 2
-                                                    ? Colors.secondaryYellowLight
-                                                    : Colors.backGroundColorSecondary,
-                                        }}
-                                        onPress={() =>
-                                            props.navigation.navigate(
-                                                'TimerInstruction',
-                                                {
-                                                    selectedTypeOffEgg: item,
-                                                },
-                                            )
-                                        }
-                                    >
-                                        <Image
-                                            source={{
-                                                uri: item.image,
-                                            }}
-                                            style={styles.imageCard}
-                                        />
-                                        <View
-                                            style={{
-                                                flexDirection: 'column',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                                height:
-                                                    Dimensions.get('window').height *
-                                                    0.12,
-                                            }}
-                                        >
-                                            <Text
-                                                style={{
-                                                    ...styles.cardText,
-                                                    color:
-                                                        item.id % 2
-                                                            ? Colors.textPrimaryLight
-                                                            : Colors.textPrimary,
-                                                }}
-                                            >
-                                                {item.name}
-                                            </Text>
-                                            <View
-                                                style={{
-                                                    flexDirection: 'row',
-                                                    alignItems: 'center',
-                                                }}
-                                            >
-                                                <Ionicons
-                                                    name="timer"
-                                                    size={16}
-                                                    color={
-                                                        item.id % 2
-                                                            ? Colors.textPrimaryLight
-                                                            : Colors.textPrimary
-                                                    }
-                                                />
-                                                <Text
-                                                    style={{
-                                                        marginLeft: 5,
-                                                        color:
-                                                            item.id % 2
-                                                                ? Colors.textPrimaryLight
-                                                                : Colors.textPrimary,
-                                                    }}
-                                                >
-                                                    3-5 min
-                                                </Text>
-                                            </View>
-                                        </View>
-                                    </TouchableOpacity>
-                                )}
-                            />
+                            {activeCategory == "Minut'Oeuf" ? (
+                                <TypeOfEggCard typeOffEggs={typeOffEggs} />
+                            ) : (
+                                <LastRecipeCard recipes={recipes.slice(0, 5)} />
+                            )}
                         </View>
                     </View>
                 </SafeAreaView>
@@ -183,26 +152,5 @@ const styles = StyleSheet.create({
         flexWrap: 'wrap',
         alignItems: 'center',
         justifyContent: 'space-between',
-    },
-    card: {
-        width: 190,
-        height: Dimensions.get('window').height * 0.55,
-        alignItems: 'center',
-        justifyContent: 'flex-start',
-        borderRadius: 15,
-        marginRight: 25,
-    },
-    imageCard: {
-        height: Dimensions.get('window').height * 0.43,
-        width: 190,
-        borderTopLeftRadius: 15,
-        borderTopRightRadius: 15,
-        resizeMode: 'cover',
-    },
-    cardText: {
-        fontSize: 18,
-        marginTop: 2,
-        letterSpacing: 0.5,
-        fontFamily: 'Orkney-bold',
     },
 });

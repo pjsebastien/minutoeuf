@@ -6,24 +6,37 @@ import {
     StyleSheet,
     Text,
     View,
+    Platform,
 } from 'react-native';
 import React, { useState } from 'react';
 import Colors from '../constants/Colors';
 import TopIcons from '../components/recipe-details/TopIcons';
+import { MarkdownView } from 'react-native-markdown-view';
 import IngredientsList from '../components/recipe-details/IngredientsList';
 import { useEffect } from 'react';
 
+import { useDispatch, useSelector } from 'react-redux';
+import * as appActions from '../store/actions/App';
+import GoBackButton from '../components/GoBackButton';
+
 const RecipeDetails = ({ route }) => {
+    const dispatch = useDispatch();
     const [recipe, setRecipee] = useState({});
-    const [ingredients, setIngredients] = useState([]);
+    const ingredients = useSelector(state => state.ingredients);
     useEffect(() => {
         let { selectedRecipe } = route?.params;
         setRecipee(selectedRecipe);
-        setIngredients(selectedRecipe.ingredients);
+        dispatch(appActions.getIngredients(selectedRecipe.name));
     }, []);
-    console.log(recipe.ingredients);
     return (
         <View style={styles.container}>
+            <View style={{ position: 'absolute', zIndex: 2, marginHorizontal: 15 }}>
+                <GoBackButton
+                    customContainerStyle={{
+                        marginTop: Platform.OS === 'android' ? 35 : 20,
+                    }}
+                />
+            </View>
             <ScrollView showsVerticalScrollIndicator={false}>
                 <SafeAreaView style={{ flex: 1 }}>
                     <ImageBackground
@@ -37,8 +50,12 @@ const RecipeDetails = ({ route }) => {
                         <View style={{ marginHorizontal: 20 }}>
                             <Text style={styles.title}>{recipe.name}</Text>
                             <Text style={styles.categoryText}>{recipe.category}</Text>
-                            <IngredientsList ingredients={ingredients} />
-                            <Text>{recipe.content}</Text>
+                            <IngredientsList ingredients={ingredients.ingredients} />
+                            <View style={{ marginVertical: 25 }}>
+                                <MarkdownView styles={markdown}>
+                                    {recipe.content}
+                                </MarkdownView>
+                            </View>
                         </View>
                     </View>
                 </SafeAreaView>
@@ -76,6 +93,26 @@ const styles = StyleSheet.create({
     },
     categoryText: {
         fontSize: 16,
+        fontFamily: 'Orkney-regular',
+    },
+});
+
+const markdown = StyleSheet.create({
+    heading4: {
+        fontFamily: 'Source-serif-bold',
+    },
+    listItemUnorderedContent: {
+        flex: 1,
+        fontFamily: 'Orkney-regular',
+    },
+    list: {
+        marginTop: 15,
+        marginBottom: 25,
+    },
+    listItem: {
+        marginVertical: 8,
+    },
+    paragraph: {
         fontFamily: 'Orkney-regular',
     },
 });

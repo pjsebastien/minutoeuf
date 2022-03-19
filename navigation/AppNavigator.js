@@ -11,6 +11,7 @@ import TimerEndScreen from '../screens/TimerEnd';
 import TimerInstructionScreen from '../screens/TimerInstruction';
 import SettingsScreen from '../screens/Settings';
 import RecipesScreen from '../screens/Recipes';
+import SearchedRecipeScreen from '../screens/SearchedRecipe';
 
 //MainStackNavigator
 const MainStackNavigatorComponent = createStackNavigator();
@@ -40,6 +41,11 @@ export const MainStackNavigator = () => {
             <MainStackNavigatorComponent.Screen
                 name="TimerEnd"
                 component={TimerEndScreen}
+                options={{ headerShown: false }}
+            />
+            <MainStackNavigatorComponent.Screen
+                name="SearchedRecipe"
+                component={SearchedRecipeScreen}
                 options={{ headerShown: false }}
             />
         </MainStackNavigatorComponent.Navigator>

@@ -1,10 +1,10 @@
-import { Button, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import React, { useState } from 'react';
 import Colors from '../../constants/Colors';
 
 const IngredientsList = ({ ingredients }) => {
-    console.log(ingredients);
     const [count, setCount] = useState(2);
+
     return (
         <View>
             <View style={styles.countContainer}>
@@ -35,42 +35,46 @@ const IngredientsList = ({ ingredients }) => {
                     </TouchableOpacity>
                 </View>
             </View>
-            {ingredients.map((ingredient, index) => {
-                return (
-                    <View key={index}>
-                        <View style={styles.cardIngredientsContainer}>
-                            <View style={styles.containerItems}>
-                                {/* <Image
-                                    style={styles.cardImage}
-                                    source={ingredient.image}
-                                /> */}
-                                <Text style={styles.cardIngredientName}>
-                                    {ingredient.attributes.title}
-                                </Text>
-                            </View>
-                            <View style={styles.containerItems}>
-                                <Text style={styles.cardIngredientQuantity}>
-                                    {ingredient.attributes.quantity > 0
-                                        ? ingredient.attributes.quantity * count
-                                        : null}{' '}
-                                    {ingredient.attributes.mesure
-                                        ? ingredient.attributes.mesure
-                                        : null}
-                                </Text>
-                            </View>
-                        </View>
-                    </View>
-                );
-            })}
+            {ingredients !== undefined
+                ? ingredients.map((ingredient, index) => {
+                      return (
+                          <View key={index}>
+                              <View style={styles.cardIngredientsContainer}>
+                                  <View style={styles.containerItems}>
+                                      <Image
+                                          style={styles.cardImage}
+                                          source={{
+                                              uri: ingredient.attributes.image.data
+                                                  .attributes.url,
+                                          }}
+                                      />
+                                      <Text style={styles.cardIngredientName}>
+                                          {ingredient.attributes.title}
+                                      </Text>
+                                  </View>
+                                  <View style={styles.containerItems}>
+                                      <Text style={styles.cardIngredientQuantity}>
+                                          {ingredient.attributes.quantity > 0
+                                              ? ingredient.attributes.quantity * count
+                                              : null}{' '}
+                                          {ingredient.attributes.mesure
+                                              ? ingredient.attributes.mesure
+                                              : null}
+                                      </Text>
+                                  </View>
+                              </View>
+                          </View>
+                      );
+                  })
+                : null}
         </View>
     );
 };
-
 export default IngredientsList;
 
 const styles = StyleSheet.create({
     cardIngredientsContainer: {
-        marginVertical: 4,
+        marginVertical: 6,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
@@ -79,7 +83,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginVertical: 25,
+        marginVertical: 30,
     },
     buttonCountContainer: {
         flexDirection: 'row',
@@ -113,9 +117,10 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     cardImage: {
-        width: 60,
-        height: 60,
-        borderRadius: 20,
+        width: 50,
+        height: 50,
+        borderRadius: 15,
+        opacity: 0.7,
     },
     cardIngredientName: {
         marginLeft: 12,
